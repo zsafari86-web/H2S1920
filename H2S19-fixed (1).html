@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>رسم مماس و وضعیت نسبی دو دایره</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f8f7;--ink:#12303a;--teal:#0b7f80;--pink:#d1346f;--am:#c98500;--card:#fff;--line:#cfe3e0;--ok:#1b8f5a;--mut:#6a858c;--pur:#8e63f2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1b1f;--ink:#e3f1ef;--teal:#37c4be;--pink:#ff7aa8;--am:#ffc247;--card:#16282d;--line:#27424a;--ok:#4fd592;--mut:#97b3b8;--pur:#af8bff}}
+:root[data-theme="dark"]{--bg:#0e1b1f;--ink:#e3f1ef;--teal:#37c4be;--pink:#ff7aa8;--am:#ffc247;--card:#16282d;--line:#27424a;--ok:#4fd592;--mut:#97b3b8;--pur:#af8bff}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font-family:Vazirmatn,Tahoma,sans-serif;background:var(--bg);color:var(--ink);line-height:2;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px}
+header{background:var(--teal);color:#fff;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+header b{font-size:1.1rem;font-weight:800}
+.author{font-size:.85rem;font-weight:600;background:rgba(255,255,255,.2);padding:2px 10px;border-radius:8px}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots button{width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:transparent;color:#fff;font:inherit;font-size:.8rem;cursor:pointer;line-height:1}
+.dots button.on{background:#fff;color:var(--teal);font-weight:800}
+.skip{border:0;background:rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:2px 12px;font:inherit;cursor:pointer}
+main{max-width:760px;margin:0 auto;padding:0 14px 60px}
+#fig{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;padding-top:10px;background:var(--bg)}
+#fig:empty{display:none}
+#txt>*{scroll-margin-top:46vh}
+h2{margin:14px 0 6px;font-size:1.3rem;color:var(--teal);font-weight:800}
+.p,.ex{margin:8px 0}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .35em;line-height:1.35}
+.fr .n{border-bottom:2px solid currentColor;padding:0 .45em}.fr .dn{padding:0 .45em}
+.f2{direction:ltr;text-align:center;font-size:1.15rem;font-weight:700;margin:4px 0 10px;color:var(--pink)}
+.f{direction:ltr;text-align:center;font-size:1.25rem;font-weight:700;margin:10px 0;color:var(--pink);min-height:2em}
+.d{border:2px solid var(--teal);border-radius:12px;background:var(--card);padding:10px 16px;margin:12px 0;font-weight:600}
+.ex{border-right:4px solid var(--pink);padding:2px 12px;background:var(--card);border-radius:6px}
+.typing::after{content:"▍";color:var(--pink);animation:bl 1s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+.demo,.quiz{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;margin:12px 0}
+#fig .demo{margin:0;box-shadow:0 8px 10px -8px rgba(0,0,0,.4)}
+svg{user-select:none;-webkit-user-select:none;width:100%;height:auto;display:block;direction:ltr;touch-action:none;max-height:38vh}
+
+/* نوار وضعیت تعاملی */
+.ro{direction:rtl;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:.84rem;padding:8px 10px;color:var(--mut);background:rgba(0,0,0,.025);border-radius:8px;margin-top:6px;border:1px solid var(--line)}
+.ro .ro-item{display:flex;flex-direction:column;gap:2px}
+.ro .ro-lbl{font-size:.8rem;color:var(--mut)}
+.ro .ro-val{font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ro b{color:var(--ink);direction:ltr;display:inline-block}
+
+button.go,.opt{font:inherit;cursor:pointer;border-radius:10px;border:2px solid var(--teal);background:transparent;color:var(--ink);padding:4px 14px}
+button.go{background:var(--pink);border-color:var(--pink);color:#fff;font-weight:600;margin:8px 0}
+.opts{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.opt{min-width:90px;font-weight:600}
+.opt.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.no{border-color:var(--pink);color:var(--pink)}
+.fb{min-height:1.8em;color:var(--mut)}
+.hd{cursor:grab}
+.hr{fill:none;stroke:var(--pink);stroke-width:2;stroke-dasharray:4 4;pointer-events:none}
+circle.cir{fill:none;stroke:var(--ink);stroke-width:2}
+circle.aux{fill:none;stroke:var(--pur);stroke-width:1.8;stroke-dasharray:5 4}
+.ln{stroke:var(--ink);stroke-width:1.8}
+.ln-ext{stroke:var(--teal);stroke-width:2.5;stroke-linecap:round}
+.ln-int{stroke:var(--pink);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:6 4}
+.pt{fill:var(--card);stroke:var(--ink);stroke-width:2}
+.pt.hd{stroke:var(--pink);stroke-width:3}
+.pt-tan{fill:var(--am);stroke:var(--ink);stroke-width:1.8}
+.mk{fill:none;stroke:var(--mut);stroke-width:2.5}
+.tf{fill:none;stroke:none}
+.st{font-weight:800;color:var(--pink);margin:14px 0 2px}
+.h1{stroke:var(--teal);stroke-width:4}.h2{stroke:var(--pink);stroke-width:4}
+.tf.h1{fill:var(--teal);fill-opacity:.25;stroke:var(--teal);stroke-width:2}
+.tf.h2{fill:var(--pink);fill-opacity:.25;stroke:var(--pink);stroke-width:2}
+.sq{fill:none;stroke:var(--pink);stroke-width:2}
+text.lb{font:600 15px Vazirmatn,sans-serif;fill:var(--ink)}
+
+/* استایل جدول بازطراحی‌شده و بدون به‌هم‌ریختگی */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:16px 0;border-radius:12px;border:1px solid var(--line);background:var(--card);box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.tbl-hint{font-size:.78rem;color:var(--mut);text-align:center;padding:6px;background:rgba(11,127,128,.05);border-bottom:1px solid var(--line);user-select:none}
+.tbl{width:100%;min-width:530px;border-collapse:collapse}
+.tbl th,.tbl td{border:1px solid var(--line);padding:10px 12px;text-align:center;font-size:.9rem;vertical-align:middle;line-height:1.8}
+.tbl th{background:rgba(11,127,128,.14);color:var(--teal);font-weight:800;white-space:nowrap}
+.tbl tr:hover{background:rgba(11,127,128,.04)}
+.td-status{text-align:right;padding-right:14px}
+.td-status .sub-lbl{font-size:.8rem;color:var(--mut);font-weight:normal}
+
+/* پلاک فرمول‌ها که مانع شکست خطوط می‌شود */
+.math-pill{direction:ltr!important;display:inline-block;font-weight:700;white-space:nowrap;color:var(--pink);background:rgba(209,52,111,.06);padding:3px 8px;border-radius:6px;border:1px dashed rgba(209,52,111,.25);font-size:.95rem}
+
+/* برچسب‌های نشانگر تعداد و نوع مماس */
+.num-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--teal);color:#fff;font-weight:800;font-size:.95rem}
+.num-badge.num-zero{background:var(--mut);opacity:.8}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.82rem;font-weight:600;white-space:nowrap}
+.b-ext{background:rgba(11,127,128,.12);color:var(--teal)}
+.b-int{background:rgba(209,52,111,.12);color:var(--pink)}
+.b-none{background:rgba(106,133,140,.12);color:var(--mut)}
+
+.nw{stroke-dasharray:1;stroke-dashoffset:1;animation:dr 1.5s ease forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+.nf{animation:fi 1s}
+@keyframes fi{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.typing::after,.nw,.nf{animation:none}.nw{stroke-dasharray:none}}
+</style>
+</head>
+<body>
+<header>
+  <b>رسم مماس و وضعیت نسبی دو دایره</b>
+  <span class="author">طراح: زینب صفری</span>
+  <div class="dots" id="dots"></div>
+  <button class="skip" id="skip">سریع‌تر تایپ کن</button>
+</header>
+<main><div id="fig"></div><div id="txt"></div></main>
+<script>
+const NS='http://www.w3.org/2000/svg',$=s=>document.querySelector(s);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const el=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;return e};
+let fast=false,run=0,F=null;
+$('#skip').onclick=()=>fast=true;
+
+const scroll=e=>{
+ const r=e.getBoundingClientRect();
+ if(e.classList.contains('tbl-wrap')){
+  if(r.top<100||r.bottom>innerHeight){
+   e.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  return;
+ }
+ if(r.bottom>innerHeight-30)window.scrollBy({top:r.bottom-innerHeight+90,behavior:'auto'});
+};
+
+async function typeInto(e,txt,tok){
+ e.classList.add('typing');let n=0;
+ for(const ch of txt){
+  if(tok!==run)return;
+  e.textContent+=ch;
+  if(++n%5===0)scroll(e);
+  if(!fast)await sleep(ch===' '?35:65);
+ }
+ scroll(e);
+ e.classList.remove('typing');
+}
+
+async function typeFormula(e,str,tok){
+ e.classList.add('typing');const re=/(\S+) \/ (\S+)/g;let last=0,m,parts=[];
+ while((m=re.exec(str))){if(m.index>last)parts.push(str.slice(last,m.index));parts.push([m[1],m[2]]);last=re.lastIndex}
+ if(last<str.length)parts.push(str.slice(last));
+ const ty=async(node,t)=>{for(const ch of t){if(tok!==run)return;node.data+=ch;if(!fast)await sleep(ch===' '?35:65)}};
+ for(const pt of parts){
+  if(tok!==run)return;
+  if(typeof pt==='string'){const t=document.createTextNode('');e.append(t);await ty(t,pt)}
+  else{const f=el('span','fr'),n=el('span','n'),d=el('span','dn'),a=document.createTextNode(''),b=document.createTextNode('');n.append(a);d.append(b);f.append(n,d);e.append(f);await ty(a,pt[0]);await ty(b,pt[1])}
+  scroll(e);
+ }
+ e.classList.remove('typing');
+}
+
+const T_TAN={tOMT:1,tOMTp:2};
+const S=[
+{k:'tan1',h:'۱. روش رسم مماس بر دایره از نقطهٔ خارج آن',items:[
+['p','دایره‌ای به مرکز O داریم و می‌خواهیم از نقطهٔ خارج دایره (M) بر آن مماس رسم کنیم.','circO pO pM',{pO:1,pM:2}],
+['btn','گام اول: رسم پاره‌خط OM و نقطهٔ وسط'],
+['st','گام ۱: پاره‌خط OM و نقطهٔ وسط آن N'],
+['p','پاره‌خط OM را رسم کرده و نقطهٔ وسط آن یعنی N را مشخص می‌کنیم.','sOM pN',{sOM:1,pN:3}],
+['btn','گام دوم: رسم دایرهٔ کمکی'],
+['st','گام ۲: رسم دایره به قطر OM'],
+['p','دایره‌ای به مرکز N و به قطر OM (شعاع NM) رسم می‌کنیم.','circAux',{circAux:4}],
+['btn','گام سوم: نقاط تقاطع و خطوط مماس'],
+['st','گام ۳: نقاط تماس T و T′\u200E'],
+['p',[['این دایرهٔ کمکی، دایرهٔ اصلی را در دو نقطهٔ T و T′\u200E قطع می‌کند.','pT pTp',{pT:1,pTp:2}],[' خط‌های MT و MT′\u200E را رسم می‌کنیم.','lMT lMTp',{lMT:1,lMTp:2}]]],
+['btn','بررسی علت مماس بودن'],
+['st','چرا خط‌های MT و MT′\u200E مماس هستند؟'],
+['p',[['شعاع‌های OT و OT′\u200E را وصل می‌کنیم.','sOT sOTp',{sOT:1,sOTp:2}],[' زاویهٔ OTM محاطی روبه‌رو به قطر OM در دایرهٔ کمکی است، پس حتماً ۹۰ درجه است!','sqT sqTp',{sqT:3,sqTp:3}]]],
+['d','نتیجه: چون شعاع OT بر خط MT در نقطهٔ تماس عمود است (OT ⟂ MT)، پس خط MT مماس بر دایره است.'],
+['free','امتحان کن: نقطهٔ M را با ماوس یا لمس جابه‌جا کن و رفتار مماس‌ها را ببین.'],
+['quiz',{q:'علت قائمه بودن زاویهٔ OTM چیست؟',o:['زاویهٔ محاطی روبه‌رو به قطر در دایرهٔ کمکی است','مثلث OMT متساوی‌الاضلاع است','نقطهٔ M تصادفی انتخاب شده است'],a:0,h:'به دایرهٔ کمکی بنفش‌رنگ به قطر OM دقت کن.',e:'زاویهٔ محاطی روبه‌رو به قطر در هر دایره همیشه ۹۰ درجه است.'}]]},
+
+{k:'tan2',init:'circO pO pM sOM pN circAux pT pTp lMT lMTp sOT sOTp sqT sqTp',h:'۲. ویژگی‌های دو مماس از یک نقطه (کار در کلاس)',items:[
+['p','از نقطهٔ خارجی M دو مماس MT و MT′\u200E رسم شده است. دو مثلث OMT و OMT′\u200E را بررسی می‌کنیم:','tOMT tOMTp',T_TAN],
+['btn','اثبات هم‌نهشتی مثلث‌ها'],
+['st','گام ۱: هم‌نهشتی دو مثلث قائم‌الزاویه'],
+['p',[['هر دو مثلث در رأس‌های T و T′\u200E قائمه هستند.','sqT sqTp',{sqT:3,sqTp:3}],[' وتر OM بین هر دو مثلث مشترک است.','sOM',{sOM:3}],[' شعاع‌های دایره برابرند: OT = OT′\u200E = R.','sOT sOTp',{sOT:1,sOTp:2}]]],
+['p','بنا به حالت (وتر و یک ضلع)، دو مثلث هم‌نهشت هستند: ΔOMT ≅ ΔOMT′\u200E.','',T_TAN],
+['btn','نتایج مهم هم‌نهشتی'],
+['st','گام ۲: برابری طول مماس‌ها و نیمساز بودن MO'],
+['p','از هم‌نهشتی دو نتیجهٔ طلایی به دست می‌آید:'],
+['p','الف) طول دو مماس همیشه برابر است:','lMT lMTp',{lMT:1,lMTp:2}],
+['f2','MT = MT′'],
+['p','ب) پاره‌خط MO نیمساز زاویهٔ بین دو مماس (TMT′\u200E) است:','sOM',{sOM:3}],
+['f2','∠TMO = ∠T′MO'],
+['d','محاسبه طول مماس با فیثاغورس: MT = √(OM² - R²)'],
+['ex','مثال عددی: اگر فاصلهٔ M تا مرکز دایره OM = 13 و شعاع R = 5 باشد:'],
+['f2','MT = √(13² - 5²) = √(169 - 25) = √144 = 12'],
+['free','نقطهٔ M را تکان بده؛ ببین که طول دو مماس همواره دقیقاً با هم برابر است.'],
+['quiz',{q:'اگر فاصلهٔ M تا مرکز دایره ۱۰ و شعاع دایره ۶ باشد، طول هر یک از مماس‌ها چقدر است؟',o:['MT = 8','MT = 7','MT = 4'],a:0,h:'از رابطهٔ MT = √(OM² - R²) استفاده کن.',e:'√(100 - 36) = √64 = 8.'}]]},
+
+{k:'rel_out',h:'۳. دو دایره متخارج (برون‌هم)',items:[
+['p','دو دایره به شعاع‌های R و R′\u200E (با فرض R > R′\u200E) و فاصلهٔ مرکزها d = OO′\u200E را بررسی می‌کنیم.'],
+['d','شرط متخارج بودن: فاصلهٔ مرکزها از مجموع دو شعاع بیشتر است:  d > R + R′\u200E'],
+['p','در شکل بالا خطوط مماس مشترک رسم شده‌اند:'],
+['p','۱. دو مماس مشترک خارجی (خطوط فیروزه‌ای بالا و پایین)'],
+['p','۲. دو مماس مشترک داخلی (خط‌چین‌های صورتی متقاطع)'],
+['d','تعداد کل مماس‌های مشترک در حالت متخارج: ۴ مماس (۲ خارجی و ۲ داخلی)']]}
+,
+
+{k:'rel_ext',h:'۴. دو دایره مماس برون',items:[
+['p','اکنون دایره‌ها به هم نزدیک شده و از بیرون در یک نقطه بر هم تکیه داده‌اند.'],
+['d','شرط مماس برون: فاصلهٔ مرکزها دقیقاً برابر با مجموع دو شعاع است:  d = R + R′\u200E'],
+['p','مماس‌های مشترک رسم‌شده در شکل:'],
+['p','۱. دو مماس مشترک خارجی (خطوط فیروزه‌ای)'],
+['p','۲. یک مماس مشترک داخلی در محل تماس دو دایره (خط‌چین صورتی عمودی)'],
+['d','تعداد کل مماس‌های مشترک در حالت مماس برون: ۳ مماس (۲ خارجی و ۱ داخلی)']]}
+,
+
+{k:'rel_sec',h:'۵. دو دایره متقاطع',items:[
+['p','دو دایره یکدیگر را در دو نقطه قطع کرده‌اند.'],
+['d','شرط متقاطع بودن: فاصلهٔ مرکزها بین تفاضل و مجموع دو شعاع است:  R - R′\u200E < d < R + R′\u200E'],
+['p','مماس‌های مشترک رسم‌شده در شکل:'],
+['p','در این حالت فقط ۲ مماس مشترک خارجی (خطوط فیروزه‌ای) وجود دارد و دایره‌ها هیچ مماس مشترک داخلی ندارند.'],
+['d','تعداد کل مماس‌های مشترک در حالت متقاطع: ۲ مماس (فقط ۲ خارجی)']]}
+,
+
+{k:'rel_int',h:'۶. دو دایره مماس درون',items:[
+['p','دایرهٔ کوچک‌تر از داخل با دایرهٔ بزرگ‌تر در یک نقطه تماس دارد.'],
+['d','شرط مماس درون: فاصلهٔ مرکزها دقیقاً برابر با تفاضل دو شعاع است:  d = R - R′\u200E'],
+['p','مماس مشترک رسم‌شده در شکل:'],
+['p','تنها ۱ خط مماس مشترک خارجی در نقطهٔ برخورد دو دایره وجود دارد (خط فیروزه‌ای).'],
+['d','تعداد کل مماس‌های مشترک در حالت مماس درون: ۱ مماس (فقط ۱ خارجی)']]}
+,
+
+{k:'rel_in',h:'۷. دو دایره متداخل و هم‌مرکز',items:[
+['p','دایرهٔ کوچک‌تر کاملاً درون دایرهٔ بزرگ‌تر قرار گرفته است بدون آن‌که با آن تماسی داشته باشد.'],
+['d','شرط متداخل بودن: فاصلهٔ مرکزها از تفاضل دو شعاع کمتر است:  d < R - R′\u200E'],
+['p','حالت خاص (هم‌مرکز): اگر مراکز بر هم منطبق شوند، d = 0 خواهد بود.'],
+['p','در هر دو حالت، هیچ خطی نمی‌تواند هم‌زمان بر هر دو دایره مماس شود.'],
+['d','تعداد کل مماس‌های مشترک در حالت متداخل و هم‌مرکز: ۰ مماس (فاقد مماس مشترک)']]}
+,
+
+{h:'۸. جدول مقایسه‌ای و جمع‌بندی جامع',items:[
+['d','جدول مقایسهٔ فاصلهٔ مرکزها (d) و تعداد مماس‌های مشترک در تمام ۶ حالت:'],
+['tbl',`
+<div class="tbl-hint">↔️ جدول قابل اسکرول به طرفین است</div>
+<table class="tbl">
+ <thead>
+  <tr>
+   <th>وضعیت دو دایره</th>
+   <th>رابطهٔ فاصلهٔ مرکزها (d)</th>
+   <th>تعداد مماس مشترک</th>
+   <th>نوع مماس‌ها</th>
+  </tr>
+ </thead>
+ <tbody>
+  <tr>
+   <td class="td-status"><b>دو دایره متخارج</b><div class="sub-lbl">(برون‌هم)</div></td>
+   <td><span class="math-pill">d &gt; R + R′</span></td>
+   <td><span class="num-badge">۴</span></td>
+   <td><span class="badge b-ext">۲ خارجی</span> و <span class="badge b-int">۲ داخلی</span></td>
+  </tr>
+  <tr>
+   <td class="td-status"><b>دو دایره مماس برون</b></td>
+   <td><span class="math-pill">d = R + R′</span></td>
+   <td><span class="num-badge">۳</span></td>
+   <td><span class="badge b-ext">۲ خارجی</span> و <span class="badge b-int">۱ داخلی</span></td>
+  </tr>
+  <tr>
+   <td class="td-status"><b>دو دایره متقاطع</b></td>
+   <td><span class="math-pill">R - R′ &lt; d &lt; R + R′</span></td>
+   <td><span class="num-badge">۲</span></td>
+   <td><span class="badge b-ext">فقط ۲ خارجی</span></td>
+  </tr>
+  <tr>
+   <td class="td-status"><b>دو دایره مماس درون</b></td>
+   <td><span class="math-pill">d = R - R′</span></td>
+   <td><span class="num-badge">۱</span></td>
+   <td><span class="badge b-ext">فقط ۱ خارجی</span></td>
+  </tr>
+  <tr>
+   <td class="td-status"><b>دو دایره متداخل</b></td>
+   <td><span class="math-pill">d &lt; R - R′ (d &gt; 0)</span></td>
+   <td><span class="num-badge num-zero">۰</span></td>
+   <td><span class="badge b-none">فاقد مماس</span></td>
+  </tr>
+  <tr>
+   <td class="td-status"><b>دایره‌های هم‌مرکز</b></td>
+   <td><span class="math-pill">d = 0</span></td>
+   <td><span class="num-badge num-zero">۰</span></td>
+   <td><span class="badge b-none">فاقد مماس</span></td>
+  </tr>
+ </tbody>
+</table>
+`],
+['p','نکته: در تمام روابط فرض بر این است که R شعاع دایرهٔ بزرگ‌تر و R′\u200E شعاع دایرهٔ کوچک‌تر است (R > R′\u200E).']]}
+,
+
+{h:'۹. آزمون و تمرین‌های تعاملی',items:[
+['d','دانش خود را از مباحث رسم مماس و وضعیت نسبی دو دایره در این آزمون محک بزنید.'],
+['quiz',{
+ q:'شعاع‌های دو دایره R = 9 و R′ = 4 است. اگر فاصلهٔ مرکزها d = 13 باشد، وضعیت دو دایره و تعداد مماس‌های مشترک کدام است؟',
+ o:['مماس برون با ۳ مماس مشترک','متخارج با ۴ مماس مشترک','متقاطع با ۲ مماس مشترک'],
+ a:0,
+ h:'مجموع شعاع‌ها را با d مقایسه کن: 9 + 4 = 13.',
+ e:'چون d = R + R′ = 13 است، دو دایره مماس برون هستند و دقیقاً ۳ مماس مشترک دارند.'
+}],
+['quiz',{
+ q:'دو دایره به شعاع‌های R = 8 و R′ = 3 مفروض‌اند. به ازای کدام مقدار فاصلهٔ مرکزها (d) دو دایره متقاطع خواهند بود؟',
+ o:['d = 7','d = 4','d = 12'],
+ a:0,
+ h:'شرط تقاطع این است که d بین تفاضل (5) و مجموع (11) باشد.',
+ e:'تفاضل شعاع‌ها 5 و مجموع آن‌ها 11 است؛ تنها مقدار 7 بین 5 و 11 قرار دارد.'
+}],
+['quiz',{
+ q:'از نقطهٔ M به فاصلهٔ ۲۵ از مرکز دایره‌ای به شعاع ۷ دو مماس MT و MT′ رسم شده است. مجموع طول دو مماس (MT + MT′) چقدر است؟',
+ o:['۴۸','۲۴','۳۲'],
+ a:0,
+ h:'ابتدا با فیثاغورس طول MT را پیدا کن: √(25² - 7²) = 24. سپس در ۲ ضرب کن.',
+ e:'طول هر مماس √(625 - 49) = 24 است. چون دو مماس برابرند، مجموع آن‌ها 24 + 24 = 48 می‌شود.'
+}],
+['quiz',{
+ q:'در کدام وضعیت، دو دایره مماس مشترک داخلی ندارند اما مماس مشترک خارجی دارند؟',
+ o:['دو دایره متقاطع یا مماس درون','دو دایره متخارج','دو دایره متداخل یا هم‌مرکز'],
+ a:0,
+ h:'به تعداد مماس‌های دو دایره متقاطع (۲ خارجی) و مماس درون (۱ خارجی) فکر کن.',
+ e:'در حالت متقاطع (۲ مماس خارجی) و مماس درون (۱ مماس خارجی)، مماس مشترک داخلی وجود ندارد.'
+}],
+['p','تبریک! شما تمام مباحث و مفاهیم این بخش از کتاب هندسه را با موفقیت فرا گرفتید. 🎉']
+]}
+];
+
+function mark(i){document.querySelectorAll('#dots button').forEach((b,j)=>b.classList.toggle('on',i===j));}
+S.forEach((s,i)=>{const b=el('button');b.textContent=i+1;b.onclick=()=>stage(i);$('#dots').append(b)});
+
+async function stage(i){
+ const tok=++run;fast=false;const s=S[i],box=$('#txt');box.innerHTML='';mark(i);window.scrollTo(0,0);
+ $('#fig').innerHTML='';F=s.k?mkFig(s.k,s.init):null;if(F)$('#fig').append(F.w);
+ const h=el('h2');box.append(h);await typeInto(h,s.h,tok);
+ for(const [k,v,sh,hl] of s.items){
+  if(tok!==run)return;
+  if(k==='tbl'){
+   const tw=el('div','tbl-wrap');tw.innerHTML=v;box.append(tw);scroll(tw);
+   if(!fast)await sleep(500);continue;
+  }
+  if(k==='quiz'){await quiz(box,v);continue}
+  if(k==='btn'){await gate(box,v);continue}
+  const e=el('div',k==='free'?'p':k);box.append(e);scroll(e);
+  if(k==='free')F.free();
+  const segs=Array.isArray(v)?v:[[v,sh,hl]];
+  for(const [t,a,b] of segs){
+    if(tok!==run)return;
+    if(F&&k!=='free'&&(a!=null||b))F.cue(a,b);
+    await (k==='f'||k==='f2'?typeFormula:typeInto)(e,t,tok);
+  }
+  if(!fast)await sleep(k==='p'||k==='ex'||k==='d'?600:350);
+  if(k==='free')await gate(box,'فهمیدم، ادامه بده');
+ }
+ if(tok!==run)return;
+ const n=el('button','go');n.textContent=i<S.length-1?'گام بعدی ◀':'شروع دوباره';n.onclick=()=>stage((i+1)%S.length);box.append(n);scroll(n);
+}
+function gate(box,label){return new Promise(r=>{const b=el('button','go');b.textContent=label;b.onclick=()=>{b.remove();r()};box.append(b);scroll(b)})}
+function quiz(box,v){return new Promise(res=>{
+ const q=el('div','quiz'),t=el('b'),row=el('div','opts'),fb=el('div','fb');t.textContent=v.q;
+ v.o.forEach((s,i)=>{const b=el('button','opt');b.dir='auto';b.textContent=s;b.onclick=()=>{
+  if(i===v.a){b.classList.add('ok');fb.textContent='آفرین! '+v.e;row.querySelectorAll('button').forEach(x=>x.disabled=true);setTimeout(res,1500);}
+  else{b.classList.add('no');fb.textContent='دوباره فکر کن. راهنما: '+v.h;}};row.append(b)});
+ q.append(t,row,fb);box.append(q);scroll(q);})}
+
+/* ---------- geometry engine ---------- */
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const dist=(p,q)=>Math.hypot(p.x-q.x,p.y-q.y);
+
+function mkFig(kind,init){
+ const w=el('div','demo'),svg=document.createElementNS(NS,'svg'),ro=el('div','ro');
+ svg.setAttribute('viewBox','0 0 480 340');w.append(svg,ro);
+ 
+ const O={x:150,y:170}, R=65;
+ let M={x:370,y:170};
+ 
+ const vis=new Set((init||'').split(' ').filter(Boolean)),fresh=new Set();
+ let hl={},fr=false;
+ const f1=x=>x.toFixed(1);
+
+ function getTangents(O,R,M){
+  const d=dist(O,M);
+  if(d<=R)return null;
+  const ang=Math.atan2(M.y-O.y,M.x-O.x);
+  const al=Math.acos(R/d);
+  return{
+   T:{x:O.x+R*Math.cos(ang+al),y:O.y+R*Math.sin(ang+al)},
+   Tp:{x:O.x+R*Math.cos(ang-al),y:O.y+R*Math.sin(ang-al)},
+   N:{x:(O.x+M.x)/2,y:(O.y+M.y)/2},
+   rAux:d/2,
+   len:Math.sqrt(d*d-R*R)
+  };
+ }
+
+ function rightAnglePath(O,T,M,size=12){
+  const v1={x:(O.x-T.x)/dist(O,T),y:(O.y-T.y)/dist(O,T)};
+  const v2={x:(M.x-T.x)/dist(M,T),y:(M.y-T.y)/dist(M,T)};
+  const p1={x:T.x+v1.x*size,y:T.y+v1.y*size};
+  const p2={x:p1.x+v2.x*size,y:p1.y+v2.y*size};
+  const p3={x:T.x+v2.x*size,y:T.y+v2.y*size};
+  return `M${p1.x} ${p1.y} L${p2.x} ${p2.y} L${p3.x} ${p3.y}`;
+ }
+
+ function renderRelative(O1,R1,O2,R2,statusTitle,tanCountStr){
+  const d=dist(O1,O2),y0=O1.y;
+  let out='';
+  out+=`<line class="ln" stroke-dasharray="4 4" x1="${O1.x}" y1="${y0}" x2="${O2.x}" y2="${y0}"/>`;
+  out+=`<circle class="cir" cx="${O1.x}" cy="${y0}" r="${R1}"/>`;
+  out+=`<circle class="cir" cx="${O2.x}" cy="${y0}" r="${R2}" style="stroke:var(--pur)"/>`;
+
+  // External tangents
+  if(d>=Math.abs(R1-R2)){
+   if(Math.abs(d-Math.abs(R1-R2))<0.01){
+    const tx=O1.x+R1;
+    out+=`<line class="ln-ext" x1="${tx}" y1="${y0-120}" x2="${tx}" y2="${y0+120}"/>`;
+    out+=`<circle class="pt-tan" cx="${tx}" cy="${y0}" r="4.5"/>`;
+   }else{
+    const sinG=(R1-R2)/d;
+    const cosG=Math.sqrt(Math.max(0,1-sinG*sinG));
+    const t1={x:O1.x+R1*sinG, y:y0-R1*cosG};
+    const t2={x:O2.x+R2*sinG, y:y0-R2*cosG};
+    out+=`<line class="ln-ext" x1="${t1.x-45*cosG}" y1="${t1.y-45*sinG}" x2="${t2.x+45*cosG}" y2="${t2.y+45*sinG}"/>`;
+    out+=`<circle class="pt-tan" cx="${t1.x}" cy="${t1.y}" r="4"/>`;
+    out+=`<circle class="pt-tan" cx="${t2.x}" cy="${t2.y}" r="4"/>`;
+    const b1={x:O1.x+R1*sinG, y:y0+R1*cosG};
+    const b2={x:O2.x+R2*sinG, y:y0+R2*cosG};
+    out+=`<line class="ln-ext" x1="${b1.x-45*cosG}" y1="${b1.y+45*sinG}" x2="${b2.x+45*cosG}" y2="${b2.y-45*sinG}"/>`;
+    out+=`<circle class="pt-tan" cx="${b1.x}" cy="${b1.y}" r="4"/>`;
+    out+=`<circle class="pt-tan" cx="${b2.x}" cy="${b2.y}" r="4"/>`;
+   }
+  }
+
+  // Internal tangents
+  if(d>=R1+R2){
+   if(Math.abs(d-(R1+R2))<0.01){
+    const tx=O1.x+R1;
+    out+=`<line class="ln-int" x1="${tx}" y1="${y0-110}" x2="${tx}" y2="${y0+110}"/>`;
+    out+=`<circle class="pt-tan" cx="${tx}" cy="${y0}" r="4.5"/>`;
+   }else{
+    const sinB=(R1+R2)/d;
+    const cosB=Math.sqrt(Math.max(0,1-sinB*sinB));
+    const k1={x:O1.x+R1*sinB, y:y0-R1*cosB};
+    const k2={x:O2.x-R2*sinB, y:y0+R2*cosB};
+    out+=`<line class="ln-int" x1="${k1.x-45*cosB}" y1="${k1.y-45*sinB}" x2="${k2.x+45*cosB}" y2="${k2.y+45*sinB}"/>`;
+    out+=`<circle class="pt-tan" cx="${k1.x}" cy="${k1.y}" r="4"/>`;
+    out+=`<circle class="pt-tan" cx="${k2.x}" cy="${k2.y}" r="4"/>`;
+    const kb1={x:O1.x+R1*sinB, y:y0+R1*cosB};
+    const kb2={x:O2.x-R2*sinB, y:y0-R2*cosB};
+    out+=`<line class="ln-int" x1="${kb1.x-45*cosB}" y1="${kb1.y+45*sinB}" x2="${kb2.x+45*cosB}" y2="${kb2.y-45*sinB}"/>`;
+    out+=`<circle class="pt-tan" cx="${kb1.x}" cy="${kb1.y}" r="4"/>`;
+    out+=`<circle class="pt-tan" cx="${kb2.x}" cy="${kb2.y}" r="4"/>`;
+   }
+  }
+
+  // Centers
+  out+=`<circle class="pt" cx="${O1.x}" cy="${y0}" r="4.5"/><text class="lb" x="${O1.x-5}" y="${y0-9}">O</text>`;
+  out+=`<circle class="pt" cx="${O2.x}" cy="${y0}" r="4.5"/><text class="lb" x="${O2.x-6}" y="${y0-9}">O′</text>`;
+
+  svg.innerHTML=out;
+  ro.innerHTML=`
+   <div class="ro-item"><span class="ro-lbl">وضعیت:</span><span class="ro-val">${statusTitle}</span></div>
+   <div class="ro-item"><span class="ro-lbl">فاصلهٔ مرکزها:</span><span class="ro-val"><b dir="ltr">d = ${f1(d/16)}</b></span></div>
+   <div class="ro-item"><span class="ro-lbl">مجموع شعاع‌ها:</span><span class="ro-val"><b dir="ltr">R + R′ = ${f1((R1+R2)/16)}</b></span></div>
+   <div class="ro-item"><span class="ro-lbl">تعداد مماس مشترک:</span><span class="ro-val" style="color:var(--pink)">${tanCountStr}</span></div>
+  `;
+ }
+
+ function draw(){
+  const c=(k,b,f)=>b+(hl[k]?' h'+hl[k]:'')+(fresh.has(k)?(f?' nf':' nw'):'');
+  const V=k=>vis.has(k);
+
+  if(kind==='tan1'||kind==='tan2'){
+   const tg=getTangents(O,R,M);
+   if(!tg)return;
+   const {T,Tp,N,rAux,len}=tg;
+   const dk=fr;
+   let s='';
+
+   if(V('tOMT'))s+=`<polygon class="${c('tOMT','tf',1)}" points="${O.x},${O.y} ${M.x},${M.y} ${T.x},${T.y}"/>`;
+   if(V('tOMTp'))s+=`<polygon class="${c('tOMTp','tf',1)}" points="${O.x},${O.y} ${M.x},${M.y} ${Tp.x},${Tp.y}"/>`;
+
+   if(V('circO'))s+=`<circle class="${c('circO','cir')}" cx="${O.x}" cy="${O.y}" r="${R}"/>`;
+   if(V('circAux'))s+=`<circle class="${c('circAux','aux')}" cx="${N.x}" cy="${N.y}" r="${rAux}"/>`;
+
+   if(V('sOM'))s+=`<line class="${c('sOM','ln')}" x1="${O.x}" y1="${O.y}" x2="${M.x}" y2="${M.y}"/>`;
+   if(V('sOT'))s+=`<line class="${c('sOT','ln')}" x1="${O.x}" y1="${O.y}" x2="${T.x}" y2="${T.y}"/>`;
+   if(V('sOTp'))s+=`<line class="${c('sOTp','ln')}" x1="${O.x}" y1="${O.y}" x2="${Tp.x}" y2="${Tp.y}"/>`;
+   if(V('lMT'))s+=`<line class="${c('lMT','ln')}" x1="${M.x}" y1="${M.y}" x2="${T.x}" y2="${T.y}"/>`;
+   if(V('lMTp'))s+=`<line class="${c('lMTp','ln')}" x1="${M.x}" y1="${M.y}" x2="${Tp.x}" y2="${Tp.y}"/>`;
+
+   if(V('sqT'))s+=`<path class="${c('sqT','sq')}" d="${rightAnglePath(O,T,M)}"/>`;
+   if(V('sqTp'))s+=`<path class="${c('sqTp','sq')}" d="${rightAnglePath(O,Tp,M)}"/>`;
+
+   const pt=(k,n,p,isM)=>{
+    if(!V(k))return'';
+    const r=isM&&dk?9:4.5;
+    return `<circle class="${c(k,'pt'+(isM&&dk?' hd':''),1)}" cx="${p.x}" cy="${p.y}" r="${r}"/>`
+     +(isM&&dk?`<circle class="hr" cx="${p.x}" cy="${p.y}" r="17"/>`:'')
+     +`<text class="lb" x="${p.x+7}" y="${p.y-7}">${n}</text>`;
+   };
+
+   s+=pt('pO','O',O,false)+pt('pN','N',N,false)+pt('pT','T',T,false)+pt('pTp','T′',Tp,false)+pt('pM','M',M,true);
+   svg.innerHTML=s;fresh.clear();
+
+   ro.innerHTML=`
+    <div class="ro-item"><span class="ro-lbl">طول مماس MT:</span><span class="ro-val"><b dir="ltr">${f1(len/18)}</b></span></div>
+    <div class="ro-item"><span class="ro-lbl">طول مماس MT′:</span><span class="ro-val"><b dir="ltr">${f1(len/18)}</b></span></div>
+    <div class="ro-item"><span class="ro-lbl">فاصله OM:</span><span class="ro-val"><b dir="ltr">${f1(dist(O,M)/18)}</b></span></div>
+    <div class="ro-item"><span class="ro-lbl">شعاع دایره R:</span><span class="ro-val"><b dir="ltr">${f1(R/18)}</b></span></div>
+   `;
+  }
+  else if(kind==='rel_out'){
+   renderRelative({x:135,y:170}, 62, {x:315,y:170}, 36, 'متخارج (برون‌هم)', '۴ مماس (۲ خارجی و ۲ داخلی)');
+  }
+  else if(kind==='rel_ext'){
+   renderRelative({x:165,y:170}, 62, {x:263,y:170}, 36, 'مماس برون', '۳ مماس (۲ خارجی و ۱ داخلی)');
+  }
+  else if(kind==='rel_sec'){
+   renderRelative({x:185,y:170}, 62, {x:250,y:170}, 36, 'متقاطع', '۲ مماس (فقط ۲ خارجی)');
+  }
+  else if(kind==='rel_int'){
+   renderRelative({x:205,y:170}, 62, {x:231,y:170}, 36, 'مماس درون', '۱ مماس (فقط ۱ خارجی)');
+  }
+  else if(kind==='rel_in'){
+   renderRelative({x:220,y:170}, 65, {x:234,y:170}, 32, 'متداخل / هم‌مرکز', 'بدون مماس مشترک (۰ مماس)');
+  }
+ }
+
+ let drag=false;
+ const pos=e=>{const m=svg.createSVGPoint();m.x=e.clientX;m.y=e.clientY;return m.matrixTransform(svg.getScreenCTM().inverse())};
+ const onDown=e=>{if(fr&&dist(pos(e),M)<35){drag=true;e.preventDefault();}};
+ const onMove=e=>{
+  if(!drag)return;e.preventDefault();
+  const p=pos(e),d=dist(O,p),mn=R+20;
+  if(d<mn){const an=Math.atan2(p.y-O.y,p.x-O.x);M={x:O.x+mn*Math.cos(an),y:O.y+mn*Math.sin(an)};}
+  else{M={x:clamp(p.x,30,450),y:clamp(p.y,30,310)};}
+  draw();
+ };
+ const onUp=()=>{drag=false;};
+
+ svg.addEventListener('pointerdown',onDown);
+ window.addEventListener('pointermove',onMove,{passive:false});
+ window.addEventListener('pointerup',onUp);
+
+ const cue=(sh,h)=>{(sh||'').split(' ').filter(Boolean).forEach(k=>{if(!vis.has(k)){vis.add(k);fresh.add(k)}});hl=h||{};draw()};
+ draw();
+
+ return{
+  w,cue,
+  free(){
+   fr=true;
+   if(kind==='tan1'||kind==='tan2'){
+    cue('circO pO pM sOM pN circAux pT pTp lMT lMTp sOT sOTp sqT sqTp tOMT tOMTp', T_TAN);
+   }
+  }
+ };
+}
+
+stage(0);
+</script>
+</body>
+</html>
